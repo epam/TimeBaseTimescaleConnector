@@ -1,0 +1,122 @@
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
+
+plugins {
+    id 'org.springframework.boot' version '2.3.0.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id 'java'
+    id "com.bmuschko.docker-remote-api"
+}
+group 'deltix'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+configurations {
+    all*.exclude group: "ch.qos.logback"
+    all*.exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
+    all*.exclude group: "com.google.code.gson", module: "gson"
+
+    integrationTestImplementation.extendsFrom(testCompile)
+    integrationTestRuntime.extendsFrom(testRuntime)
+}
+sourceSets {
+    integrationTest {
+        java {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir file('src/integration-test/java')
+        }
+        resources.srcDir file('src/integration-test/resources')
+    }
+}
+
+dependencies {
+    compile("deltix:deltix-gflog-core:${gflog_version}")
+    compile("deltix:deltix-gflog-jcl:${gflog_version}")
+    compile("deltix:deltix-gflog-jul:${gflog_version}")
+    compile("deltix:deltix-gflog-slf4j:${gflog_version}")
+
+    compile("deltix:deltix-dfp:${dfp_version}")
+
+    compile("org.springframework.boot:spring-boot-starter-web:${spring_boot_version}")
+    compile("org.springframework.boot:spring-boot-starter-data-jdbc:${spring_boot_version}")
+    compile("org.springframework.boot:spring-boot-starter-aop:${spring_boot_version}")
+    compile("org.springframework.boot:spring-boot-starter-actuator:${spring_boot_version}")
+
+    compile("deltix.qsrv.timebase:deltix-timebase-api:${timebase_client_version}") {
+        exclude group: "net.java.dev.jna"
+    }
+    compile("deltix.qsrv.timebase:deltix-timebase-client:${timebase_client_version}")
+    compile("deltix.qsrv.timebase:deltix-timebase-pub:${timebase_client_version}")
+    compile "deltix.qsrv:deltix-commons-util:6.0.44"
+    compile "deltix.qsrv:deltix-commons-messages:6.0.44"
+
+    compile("org.postgresql:postgresql:${postgres_jdbc_version}")
+
+    compileOnly("org.projectlombok:lombok:${lombok_version}")
+    annotationProcessor("org.projectlombok:lombok:${lombok_version}")
+
+    testCompileOnly("org.projectlombok:lombok:${lombok_version}")
+    testAnnotationProcessor("org.projectlombok:lombok:${lombok_version}")
+    testCompile("org.testcontainers:postgresql:${postgres_testcontainers_version}")
+    testCompile("org.springframework.boot:spring-boot-starter-test:${spring_boot_version}")
+}
+
+test {
+    useJUnitPlatform()
+
+    testLogging.showStandardStreams = false
+
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+
+    reports {
+        html.enabled = true
+    }
+}
+
+task integrationTest(type: Test) {
+    group 'verification'
+
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    // This forces integration tests to always run if the task is run.
+    outputs.upToDateWhen { false }
+    testLogging.showStandardStreams = true
+    testLogging.exceptionFormat = 'full'
+    useJUnitPlatform()
+
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+
+    reports {
+        html.enabled = true
+    }
+}
+
+final def dockerImageName = "$dockerUrl/connectors/timescale-connector"
+def dockerTags = dockerTags.collect { baseTag -> "$dockerImageName:${baseTag}" }
+
+task buildDockerImage(type: DockerBuildImage) {
+    group 'docker'
+
+    inputDir = project.file("$projectDir")
+    buildDockerImage.tags = dockerTags
+}
+
+task pushDockerImage(type: DockerPushImage) {
+    group 'docker'
+    dependsOn buildDockerImage
+    imageName = dockerImageName
+}
+
+task removeDockerImage(type: Exec) {
+    group 'docker'
+    ignoreExitValue true
+    dependsOn pushDockerImage
+    def cmd = ["docker", "rmi"] + dockerTags
+    commandLine cmd
+}

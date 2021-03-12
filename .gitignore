@@ -1,0 +1,4 @@
+.idea
+.gradle
+timescaledb-connector/build
+build
