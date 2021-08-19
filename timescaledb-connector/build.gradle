@@ -9,8 +9,8 @@ plugins {
 }
 group 'deltix'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 11
+targetCompatibility = 11
 
 configurations {
     all*.exclude group: "ch.qos.logback"
@@ -32,25 +32,35 @@ sourceSets {
 }
 
 dependencies {
-    compile("deltix:deltix-gflog-core:${gflog_version}")
-    compile("deltix:deltix-gflog-jcl:${gflog_version}")
-    compile("deltix:deltix-gflog-jul:${gflog_version}")
-    compile("deltix:deltix-gflog-slf4j:${gflog_version}")
+    compile "org.finos.timebase-ce:timebase-client:${timebaseVersion}"
+//           {
+//        exclude group: "net.java.dev.jna"
+//    }
 
-    compile("deltix:deltix-dfp:${dfp_version}")
+    compile "org.finos.timebase-ce:timebase-api:${timebaseVersion}"
+    compile "org.finos.timebase-ce:timebase-pub:${timebaseVersion}"
+    compile "org.finos.timebase-ce:timebase-aerondirect:${timebaseVersion}"
+
+    compile "com.epam.deltix:containers:3.1.2"
+    compile 'com.epam.deltix:dfp:0.11.01'
+
+    compile "com.epam.deltix:timebase-lang:${commonsVersion}"
+    compile "com.epam.deltix:timebase-util:${commonsVersion}"
+    compile "com.epam.deltix:timebase-messages:${commonsVersion}"
+    compile "com.epam.deltix:timebase-collections:${commonsVersion}"
+
+    compile 'com.epam.deltix:dfp:0.11.01'
+    compile "com.epam.deltix:gflog-api:${gflogVersion}"
+    compile "com.epam.deltix:gflog-core:${gflogVersion}"
+
+    compile 'com.google.guava:guava:20.0'
+
+    testCompile 'junit:junit:4.12'
 
     compile("org.springframework.boot:spring-boot-starter-web:${spring_boot_version}")
     compile("org.springframework.boot:spring-boot-starter-data-jdbc:${spring_boot_version}")
     compile("org.springframework.boot:spring-boot-starter-aop:${spring_boot_version}")
     compile("org.springframework.boot:spring-boot-starter-actuator:${spring_boot_version}")
-
-    compile("deltix.qsrv.timebase:deltix-timebase-api:${timebase_client_version}") {
-        exclude group: "net.java.dev.jna"
-    }
-    compile("deltix.qsrv.timebase:deltix-timebase-client:${timebase_client_version}")
-    compile("deltix.qsrv.timebase:deltix-timebase-pub:${timebase_client_version}")
-    compile "deltix.qsrv:deltix-commons-util:6.0.44"
-    compile "deltix.qsrv:deltix-commons-messages:6.0.44"
 
     compile("org.postgresql:postgresql:${postgres_jdbc_version}")
 

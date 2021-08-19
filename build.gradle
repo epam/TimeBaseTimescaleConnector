@@ -3,8 +3,6 @@ plugins {
     id "com.bmuschko.docker-remote-api" version "5.2.0"
 }
 
-sourceCompatibility = 1.8
-
 repositories {
     mavenCentral()
 }
@@ -13,11 +11,11 @@ allprojects {
     apply from: "$rootDir/gradle/Deltix.gradle"
 
     repositories {
-        mavenDeltixProxy("DevMain")
+        mavenCentral()
         }
     buildscript {
         repositories {
-            mavenDeltixProxy("DevMain")
+            mavenCentral()
         }
     }
 }
