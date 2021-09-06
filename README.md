@@ -22,15 +22,13 @@ To replicate TimeBase stream data to Timescale, we take fields, objects and clas
 
 |TimeBase Type/Encoding|Timescale Type|
 |-------------|---------------|
-|INTEGER/SIGNED (8)|INTEGER|
-|INTEGER/SIGNED (16)|INTEGER|
-|INTEGER/SIGNED (32)|INTEGER|
+|INTEGER/SIGNED (8-32)|INTEGER|
 |INTEGER/SIGNED (64)|BIGINT|
 |ENUM|VARCHAR|
+|VARCHAR|VARCHAR|
+|CHAR|CHAR|
 |BINARY|BYTEA|
 |BOOLEAN|BOOLEAN|
-|CHAR|CHAR|
-|VARCHAR|VARCHAR|
 |FLOAT/DECIMAL64|DECIMAL(36, 18)|
 |FLOAT|DECIMAL|
 |ARRAY|JSON|
@@ -205,7 +203,7 @@ logging:
 * `ROOT_LOG_LEVEL` - logs root level (TRACE, DEBUG, INFO, WARN, ERROR, FATAL).
 * `APP_LOG_LEVEL` - logging level.
 
-## Known Restrictions
+## Known Limitations
 
 **TBD**
 
