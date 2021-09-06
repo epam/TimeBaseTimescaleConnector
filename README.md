@@ -68,7 +68,7 @@ The Timescale table will have the following structure:
                                             Table "timescale_stream"
       Column       |            Type             | Collation | Nullable |              Default               
 -------------------+-----------------------------+-----------+----------+------------------------------------
- exchangeid        | character varying           |           |          | 
+ exchange          | character varying           |           |          | 
  sourceid          | character varying           |           |          | 
  sequencenumber    | bigint                      |           |          | 
  array             | json                        |           |          | 
