@@ -205,7 +205,7 @@ logging:
 
 ## Known Limitations
 
-**TBD**
+Timescale replicator does not currently support the replication of primitves' arrays. 
 
 ## Replication Tracker
 
