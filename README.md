@@ -40,6 +40,8 @@ To replicate TimeBase stream data to Timescale, we take fields, objects and clas
 
 Let's take a look at a **simplified** example. In this example we will show how a message with a polymorphic array is transformed into a Timescale table. 
 
+Refer to [Example](https://github.com/epam/TimeBaseTimescaleConnector/tree/docs/example) to view a step-by-step instruction on how to run this demo example and try the replication in action. 
+
 ```sql
 /*TimeBase stream schema*/
 
@@ -91,12 +93,6 @@ CREATE TABLE public.timescale_stream (
 
 Here we can see, that each field has been parsed in a separate table colum with an appropriate data type mapping. Entries array has been inserted as a JSON string. 
 
-This table can be displayed in the TimeBase integration with [pgAdmin](https://www.pgadmin.org/) PostgreSQL administration and management platform as follows: 
-
-![](/timescaledb-connector/src/img/pgAdmin.png)
-
-Refer to [Example](https://github.com/epam/TimeBaseTimescaleConnector/tree/docs/example) to view a step-by-step instruction on how to run this demo example and try the replication in action. 
-
 ## Failover Support 
 
 ```yaml
@@ -132,19 +128,7 @@ Timescale replicator can monitor changes made to the source TimeBase **stream sc
 
 ## Deployment
 
-1. Run TimeBase<br>
-```bash
-# start TimeBase Community Edition
-docker run --rm -d \
-  -p 8011:8011 \
-  --name=timebase-server \
-  --ulimit nofile=65536:65536 \
-  finos/timebase-ce-server:latest
-```
-2. Run replicator in [Docker](https://github.com/epam/TimeBaseTimescaleConnector/blob/main/timescaledb-connector/Dockerfile) or directly via `java -jar`
-
-* Refer to [TimeBase Quick Start](https://kb.timebase.info/quick-start.html) to learn more about starting TimeBase.
-* Refer to [Replicator GitHub Repository](https://github.com/epam/TimeBaseTimescaleConnector/blob/main/timescaledb-connector/Dockerfile) to learn more about it's deployment. 
+Refer to [Example](https://github.com/epam/TimeBaseTimescaleConnector/tree/docs/example) to learn more about starting the replication.
 
 ## Configuration
 
