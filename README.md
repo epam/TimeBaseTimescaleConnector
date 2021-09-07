@@ -44,50 +44,49 @@ Let's take a look at a **simplified** example. In this example we will show how 
 /*TimeBase stream schema*/
 
 DURABLE STREAM "timescale_stream" (
-    CLASS "array" (
-    );
-    CLASS "bbo" UNDER "array" (
+    CLASS "trade" (
         "price" '' FLOAT DECIMAL64,
-        "size" '' FLOAT DECIMAL64,
-        "exchange" '' VARCHAR MULTILINE
+        "size" '' FLOAT DECIMAL64
     );
-    CLASS "trade" UNDER "array" (
+    CLASS "bbo" (
         "askPrice" '' FLOAT DECIMAL64,
         "askSize" '' FLOAT DECIMAL64,
         "bidPrice" '' FLOAT DECIMAL64,
-        "bidSize" '' FLOAT DECIMAL64,
-        "exchange" '' VARCHAR MULTILINE
+        "bidSize" '' FLOAT DECIMAL64
+    );
+    CLASS "Message" (
+        "entries" ARRAY(OBJECT("trade", "bbo") NOT NULL)
     );
 )
 OPTIONS (POLYMORPHIC; PERIODICITY = 'IRREGULAR'; HIGHAVAILABILITY = FALSE)
 ```
+
 The Timescale table will have the following structure:
 
 ```bash
-    
-                                            Table "timescale_stream"
-      Column       |            Type             | Collation | Nullable |              Default               
--------------------+-----------------------------+-----------+----------+------------------------------------
- exchange          | character varying           |           |          | 
- sourceid          | character varying           |           |          | 
- sequencenumber    | bigint                      |           |          | 
- array             | json                        |           |          | 
- originalstatus    | character varying           |           |          | 
- descriptor_name   | character varying           |           |          | 
- cause             | character varying           |           |          | 
- originaltimestamp | timestamp without time zone |           |          | 
- currencycode      | integer                     |           |          | 
- packagetype       | character varying           |           |          | 
- status            | character varying           |           |          | 
- id                | integer                     |           | not null | nextval('timescale_stream_id_seq'::regclass)
- eventtime         | timestamp without time zone |           | not null | 
- symbol            | character varying           |           |          | 
+                                           Table "public.timescale_stream"
+     Column      |            Type             | Collation | Nullable |              Default
+-----------------+-----------------------------+-----------+----------+------------------------------------
+ entries         | json                        |           |          |
+ descriptor_name | character varying           |           |          |
+ id              | integer                     |           | not null | nextval('stream_id_seq'::regclass)
+ eventtime       | timestamp without time zone |           | not null |
+ symbol          | character varying           |           |          |
 Indexes:
-    "timescale_stream_pkey" PRIMARY KEY, btree (id, eventtime)
-    "timescale_stream_eventtime_idx" btree (eventtime DESC)
+    "stream_pkey" PRIMARY KEY, btree (id, eventtime)
+    "stream_eventtime_idx" btree (eventtime DESC)
 Triggers:
-    ts_insert_blocker BEFORE INSERT ON timescale_stream FOR EACH ROW EXECUTE FUNCTION _timescaledb_internal.insert_blocker()
-Number of child tables: 1 (Use \d+ to list them.)
+    ts_insert_blocker BEFORE INSERT ON stream FOR EACH ROW EXECUTE FUNCTION _timescaledb_internal.insert_blocker()
+```
+
+```sql
+CREATE TABLE public.timescale_stream (
+    entries json,
+    descriptor_name character varying,
+    id integer NOT NULL,
+    eventtime timestamp without time zone NOT NULL,
+    symbol character varying
+);
 ```
 
 Here we can see, that each field has been parsed in a separate table colum with an appropriate data type mapping. Entries array has been inserted as a JSON string. 
@@ -205,7 +204,8 @@ logging:
 
 ## Known Limitations
 
-Timescale replicator does not currently support the replication of primitves' arrays. 
+* Timescale replicator does not currently support the replication of primitves' arrays. 
+* Timescale replicator does not currently support TRUNCATE, PURGE, DELETE commands. 
 
 ## Replication Tracker
 
