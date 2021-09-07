@@ -95,6 +95,8 @@ This table can be displayed in the TimeBase integration with [pgAdmin](https://w
 
 ![](/timescaledb-connector/src/img/pgAdmin.png)
 
+Refer to [Example](https://github.com/epam/TimeBaseTimescaleConnector/tree/docs/example) to view a step-by-step instruction on how to run this demo example and try the replication in action. 
+
 ## Failover Support 
 
 ```yaml
@@ -204,8 +206,8 @@ logging:
 
 ## Known Limitations
 
-* Timescale replicator does not currently support the replication of primitves' arrays. 
-* Timescale replicator does not currently support TRUNCATE, PURGE, DELETE commands. 
+* Timescale replicator does not currently support the replication of primitives' arrays. 
+* Timescale replicator does not currently support stream TRUNCATE, PURGE, DELETE commands. 
 
 ## Replication Tracker
 

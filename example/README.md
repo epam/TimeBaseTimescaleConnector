@@ -5,7 +5,7 @@ This example serves **only** for demonstration purposes to show the replication 
 **Prerequisites**
 
 * Docker
-* Java 8+
+* Java 11+
 
 **1. Launch Timescale**
   * Get timescale Docker image<br>
@@ -28,10 +28,12 @@ This example serves **only** for demonstration purposes to show the replication 
   docker exec -it tbserver /timebase-server/bin/tickdb.sh
   
   ==> set db dxtick://localhost:8011
+
+  ==> open
   ```
 **4. Create a timescale_stream Stream in TimeBase**<br>
 ```bash
-==> open
+
 ==> ??
 create DURABLE STREAM "timescale_stream" (
     CLASS "trade" (
@@ -65,15 +67,10 @@ OPTIONS (POLYMORPHIC; PERIODICITY = 'IRREGULAR'; HIGHAVAILABILITY = FALSE)
   ```bash
   ./gradlew clean build
   ```
-  * Open the build artifacts directory<br>
-  ```bash
-  cd timescale-connector/build/libs
-  ```
   * Start the Timescale replicator. Refer to README to learn more about the available [configuration parameters](https://github.com/epam/TimeBaseTimescaleConnector/blob/main/README.md#configuration).<br>
   ```bash
   set TIMEBASE_STREAMS_FOR_REPLICATION=timescale_stream
-  
-  java -jar timescaledb-connector-1.0.1-SNAPSHOT.jar
+  java -jar timescale-conntecor/build/libs/timescaledb-connector-1.0.1-SNAPSHOT.jar
   ```
 **7. View Stream in Timescale**
   * Go to Timescale Docker container and run a `select` command. You can also run the `/d table_name` command to get the table description.<br>
