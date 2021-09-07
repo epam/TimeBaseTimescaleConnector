@@ -12,12 +12,12 @@ This example serves **only** for demonstration purposes to show the replication 
   ```bash
   docker pull timescale/timescaledb:1.7.4-pg12
   ```
-  * Run Timescale<br>
+  * Enter your password and run Timescale<br>
   ```bash
   docker run -d --name timescaledb -p 5432:5432 -e POSTGRES_PASSWORD=password timescale/timescaledb:1.7.4-pg12
   ```
 **2. Launch TimeBase**
-  * Get and run TimeBase Community Edition<br>
+  * Get and run the TimeBase Community Edition<br>
   ```bash
   docker pull finos/timebase-ce-server
  
@@ -29,7 +29,7 @@ This example serves **only** for demonstration purposes to show the replication 
   
   ==> set db dxtick://localhost:8011
   ```
-**4. Create Stream in TimeBase**<br>
+**4. Create a timescale_stream Stream in TimeBase**<br>
 ```bash
 ==> open
 ==> ??
@@ -51,7 +51,7 @@ create DURABLE STREAM "timescale_stream" (
 OPTIONS (POLYMORPHIC; PERIODICITY = 'IRREGULAR'; HIGHAVAILABILITY = FALSE)
 /
 ```
-**5. Write Into a New Stream**
+**5. Write Into a timescale_stream Stream**
 ```bash
 ==> set stream timescale_stream
 ==> send [{"type":"Message","symbol":"btcusd","timestamp":"2021-09-06T23:08:45.790Z","entries":[{"type":"trade","price":"333.1","size":"444.2"}]}]
@@ -76,7 +76,7 @@ OPTIONS (POLYMORPHIC; PERIODICITY = 'IRREGULAR'; HIGHAVAILABILITY = FALSE)
   java -jar timescaledb-connector-1.0.1-SNAPSHOT.jar
   ```
 **7. View Stream in Timescale**
-  * Go to Timescale Docker container and make a select<br>
+  * Go to Timescale Docker container and run a `select` command. You can also run the `/d table_name` command to get the table description.<br>
   ```bash
   docker exec -it timescaledb /bin/bash
   
@@ -87,18 +87,19 @@ OPTIONS (POLYMORPHIC; PERIODICITY = 'IRREGULAR'; HIGHAVAILABILITY = FALSE)
   postgres=# \d timescale_stream;
   ```
 
+---------------------------------------------------
 
 **To Run Replicator in Docker**
 
-1. Build image<br>
+1. Build the Replicator Docker image<br>
 ```bash
 ./gradlew buildDockerImage
 ```
-2. Create container from image<br>
+2. Create the container from the Docker image<br>
 ```bash
 docker create --name replicator -e POSTGRES_HOST=timescaledb -e TIMEBASE_HOST=tbserver -e TIMEBASE_STREAMS_FOR_REPLICATION=timescale_stream null/deltix.docker/connectors/timescale-connector:1.0
 ```
-3. Create network between replicator and timebase and timescale<br>
+3. Create a network between Replicator, TimeBase and Timescale<br>
 ```bash
 docker network create tsrep
 
@@ -108,9 +109,9 @@ docker network connect tsrep timescaledb
 
 docker network connect tsrep replicator
 ```
-4. Start replicator container<br>
+4. Start the Replicator container<br>
 ```bash
 docker start replicator
 ```
-5. Refer to step 7 form the above example. 
+5. Refer to **Step 7** form the above example to view the table. 
 
