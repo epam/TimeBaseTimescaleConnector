@@ -40,7 +40,7 @@ To replicate TimeBase stream data to Timescale, we take fields, objects and clas
 
 Let's take a look at a **simplified** example. In this example we will show how a message with a polymorphic array is transformed into a Timescale table. 
 
-Refer to [Example](https://github.com/epam/TimeBaseTimescaleConnector/tree/docs/example) to view a step-by-step instruction on how to run this demo example and try the replication in action. 
+Refer to [Example](https://github.com/epam/TimeBaseTimescaleConnector/tree/main/example) to view a step-by-step instruction on how to run this demo example and try the replication in action. 
 
 ```sql
 /*TimeBase stream schema*/
@@ -93,7 +93,7 @@ CREATE TABLE public.timescale_stream (
 
 Here we can see, that each field has been parsed in a separate table colum with an appropriate data type mapping. Entries array has been inserted as a JSON string. 
 
-## Failover Support 
+## Failover and Recovery Support 
 
 ```yaml
 ...
@@ -104,7 +104,7 @@ replicator:
 
 ```
 
-`RETRY_ATTEMPT` is an important Timescale configuration parameter. Use it to set a number of replication retry attempts in case there has been any interruptions in the replication process or connection failures. With each retry the last ms data is deleted and the replication resumes from this timestamp.
+`RETRY_ATTEMPT` is an important replicator's configuration parameter. Use it to set a number of replication retry attempts in case there has been any interruptions in the replication process or connection failures. With each retry the last ms data is deleted and the replication resumes from this timestamp.
 
 The flow is as follows: 
 
@@ -118,6 +118,8 @@ DELETE FROM table_name WHERE EventTime = max_time
 ```
 3. Continue replication from the `MAX` timestamp.
 
+In case of an application restart or any interruption in a replication process, the system automatically determines where the replication has been interrupted and resumes from this moment. As a result, the last ms of data in a stream is erased and the replication resumes from this timestamp.
+
 ## Schema Consistency
 
 Timescale replicator can monitor changes made to the source TimeBase **stream schema** and propagate those to the target database, thus ensuring the target database schema is always consistent with the data source: 
@@ -128,7 +130,7 @@ Timescale replicator can monitor changes made to the source TimeBase **stream sc
 
 ## Deployment
 
-Refer to [Example](https://github.com/epam/TimeBaseTimescaleConnector/tree/docs/example) to learn more about starting the replication.
+Refer to [Example](https://github.com/epam/TimeBaseTimescaleConnector/tree/main/example) to learn more about starting the replication.
 
 ## Configuration
 
@@ -176,7 +178,7 @@ logging:
 * `TIMEBASE_HOST` - TimeBase host.
 * `TIMEBASE_PORT` - TimeBase port.
 * `TIMEBASE_BATCH_SIZE` - number of messages in one batch.
-* `TIMEBASE_STREAMS_FOR_REPLICATION` - comma-separated list of stream names that will be replicated. 
+* `TIMEBASE_STREAMS_FOR_REPLICATION` - comma-separated list of stream names that will be replicated. Wildcards are supported. 
 * `TIMEBASE_AUTO_DISCOVERY` - flag that enables/disables the automated discovery of streams to be replicated. 
 
 **Replicator Configurations:**
