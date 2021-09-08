@@ -93,7 +93,7 @@ CREATE TABLE public.timescale_stream (
 
 Here we can see, that each field has been parsed in a separate table colum with an appropriate data type mapping. Entries array has been inserted as a JSON string. 
 
-## Failover Support 
+## Failover and Recovery Support 
 
 ```yaml
 ...
@@ -104,7 +104,7 @@ replicator:
 
 ```
 
-`RETRY_ATTEMPT` is an important Timescale configuration parameter. Use it to set a number of replication retry attempts in case there has been any interruptions in the replication process or connection failures. With each retry the last ms data is deleted and the replication resumes from this timestamp.
+`RETRY_ATTEMPT` is an important replicator's configuration parameter. Use it to set a number of replication retry attempts in case there has been any interruptions in the replication process or connection failures. With each retry the last ms data is deleted and the replication resumes from this timestamp.
 
 The flow is as follows: 
 
@@ -117,6 +117,8 @@ SELECT MAX(EventTime) AS EventTime FROM table_name
 DELETE FROM table_name WHERE EventTime = max_time
 ```
 3. Continue replication from the `MAX` timestamp.
+
+In case of an application restart or any interruption in a replication process, the system automatically determines where the replication has been interrupted and resumes from this moment. As a result, the last ms of data in a stream is erased and the replication resumes from this timestamp.
 
 ## Schema Consistency
 
@@ -176,7 +178,7 @@ logging:
 * `TIMEBASE_HOST` - TimeBase host.
 * `TIMEBASE_PORT` - TimeBase port.
 * `TIMEBASE_BATCH_SIZE` - number of messages in one batch.
-* `TIMEBASE_STREAMS_FOR_REPLICATION` - comma-separated list of stream names that will be replicated. 
+* `TIMEBASE_STREAMS_FOR_REPLICATION` - comma-separated list of stream names that will be replicated. Wildcards are supported. 
 * `TIMEBASE_AUTO_DISCOVERY` - flag that enables/disables the automated discovery of streams to be replicated. 
 
 **Replicator Configurations:**
