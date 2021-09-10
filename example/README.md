@@ -65,12 +65,13 @@ OPTIONS (POLYMORPHIC; PERIODICITY = 'IRREGULAR'; HIGHAVAILABILITY = FALSE)
   ```
   * Build the Timescale replicator<br>
   ```bash
-  ./gradlew clean build
+  gradlew clean build
   ```
   * Start the Timescale replicator. Refer to README to learn more about the available [configuration parameters](https://github.com/epam/TimeBaseTimescaleConnector/blob/main/README.md#configuration).<br>
   ```bash
   set TIMEBASE_STREAMS_FOR_REPLICATION=timescale_stream
-  java -jar timescale-conntecor/build/libs/timescaledb-connector-1.0.1-SNAPSHOT.jar
+
+  java -jar timescaledb-connector/build/libs/timescaledb-connector-1.0.1-SNAPSHOT.jar
   ```
 **7. View Stream in Timescale**
   * Go to Timescale Docker container and run a `select` command. You can also run the `/d table_name` command to get the table description.<br>
